@@ -1,4 +1,6 @@
+import 'package:bloc_demo/color_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +13,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: BlocProvider(
+        create: (context) => ColorBloc(),
+        child: MyHomePage(),
+      ),
     );
   }
 }
@@ -21,6 +26,8 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorBloc bloc = BlocProvider.of<ColorBloc>(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Using flutter_bloc'),
@@ -28,19 +35,27 @@ class MyHomePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: Center(
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          color: Colors.red,
-          height: 130,
-          width: 130,
+        child: BlocBuilder<ColorBloc, Color>(
+          builder: (context, currentColor) => AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            color: currentColor,
+            height: 130,
+            width: 130,
+          ),
         ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(onPressed: () {}, backgroundColor: Colors.red,),
+          FloatingActionButton(
+            onPressed: () => bloc.add(RedColorEvent()),
+            backgroundColor: Colors.red,
+          ),
           SizedBox(width: 10.0),
-          FloatingActionButton(onPressed: () {}, backgroundColor: Colors.green,),
+          FloatingActionButton(
+            onPressed: () => bloc.add(GreenColorEvent()),
+            backgroundColor: Colors.green,
+          ),
         ],
       ),
     );
